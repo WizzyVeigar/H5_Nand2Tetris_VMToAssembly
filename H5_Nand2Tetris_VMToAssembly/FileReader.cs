@@ -35,7 +35,10 @@ namespace H5_Nand2Tetris_VMToAssembly
             File.WriteAllText(Environment.CurrentDirectory + "/output.asm", assemblyString.ToString());
         }
 
-
+        /// <summary>
+        /// Converts VM lines to assembly code
+        /// </summary>
+        /// <param name="lines"></param>
         private void ConvertLinesToAssembly(string[] lines)
         {
             RemoveComments(lines);
@@ -63,6 +66,10 @@ namespace H5_Nand2Tetris_VMToAssembly
             }
         }
 
+        /// <summary>
+        /// Remove comments from the file
+        /// </summary>
+        /// <param name="lines"></param>
         private void RemoveComments(string[] lines)
         {
             for (int i = 0; i < lines.Length; i++)
@@ -132,6 +139,10 @@ namespace H5_Nand2Tetris_VMToAssembly
             }
         }
 
+        /// <summary>
+        /// Method for writing a conditional >, <, ==
+        /// </summary>
+        /// <param name="jumpCondition"></param>
         private void WriteConditional(string jumpCondition)
         {
             assemblyString.AppendLine("@FALSE" + conditionalCounter);
