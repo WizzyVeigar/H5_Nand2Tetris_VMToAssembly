@@ -50,20 +50,58 @@ namespace H5_Nand2Tetris_VMToAssembly
 
                 if (parts.Length > 1 || !string.IsNullOrWhiteSpace(parts[0]))
                 {
-                    if (line.Contains("push"))
+                    switch (parts[0])
                     {
-                        ConvertPushToAssembly(parts);
-                    }
-                    else if (line.Contains("pop"))
-                    {
-                        ConvertPopToAssembly(parts);
-                    }
-                    else
-                    {
-                        ConvertLogicalCommandToAssembly(parts);
+                        case "push":
+                            ConvertPushToAssembly(parts);
+                            break;
+                        case "pop":
+                            ConvertPopToAssembly(parts);
+                            break;
+                        case "label":
+                        case "function":
+                            CreateLabel(parts);
+                            break;
+                        case "if-goto":
+                            CreateIfGoTo(parts);
+                            break;
+                        case "goto":
+                            CreateGoTo(parts);
+                            break;
+                            break;
+                        case "return":
+                            CreateReturn(parts);
+                            break;
+                        case "call":
+                            CreateCallFunction(parts);
+                            break;
+                        default:
+                            ConvertLogicalCommandToAssembly(parts);
+                            break;
                     }
                 }
             }
+        }
+
+        private void CreateGoTo(string[] parts)
+        {
+            assemblyString.AppendLine($"@{parts[1]}");
+            assemblyString.AppendLine("0;JMP");
+        }
+        
+        private void CreateReturn(string[] parts)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CreateCallFunction(string[] parts)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CreateLabel(string[] parts)
+        {
+            assemblyString.AppendLine($"({parts[1]})");
         }
 
         /// <summary>
@@ -137,6 +175,21 @@ namespace H5_Nand2Tetris_VMToAssembly
                     assemblyString.AppendLine("M=!M");
                     break;
             }
+        }
+
+
+        /// <summary>
+        /// Creates a if-goto to loop back on a previous label. Used for stuff like loops
+        /// </summary>
+        /// <param name="parts"></param>
+        private void CreateIfGoTo(string[] parts)
+        {
+            //Place to look for loop amount
+            assemblyString.AppendLine("@ARG");
+            assemblyString.AppendLine("A=M");
+            assemblyString.AppendLine("MD=M-1");
+            assemblyString.AppendLine($"@{parts[1]}");
+            assemblyString.AppendLine("D;JNE");
         }
 
         /// <summary>
