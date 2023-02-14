@@ -12,6 +12,7 @@ namespace H5_Nand2Tetris_VMToAssembly
     {
         StringBuilder assemblyString = new StringBuilder();
         int conditionalCounter = 0;
+        int returnCountId = 0;
 
         //const
         //static
@@ -68,7 +69,6 @@ namespace H5_Nand2Tetris_VMToAssembly
                         case "goto":
                             CreateGoTo(parts);
                             break;
-                            break;
                         case "return":
                             CreateReturn(parts);
                             break;
@@ -96,7 +96,65 @@ namespace H5_Nand2Tetris_VMToAssembly
 
         private void CreateCallFunction(string[] parts)
         {
-            throw new NotImplementedException();
+            string retAddrLabel = parts[1] + "$" + returnCountId++ + "ret." + parts[2];
+
+            assemblyString.AppendLine("@" + retAddrLabel); //push retAddrLabel
+            assemblyString.AppendLine("D=A");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("A=M");
+            assemblyString.AppendLine("M=D");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("M=M+1");
+
+            assemblyString.AppendLine("@LCL"); //push LCL
+            assemblyString.AppendLine("D=M");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("A=M");
+            assemblyString.AppendLine("M=D");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("M=M+1");
+
+            assemblyString.AppendLine("@ARG"); //push ARG
+            assemblyString.AppendLine("D=M");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("A=M");
+            assemblyString.AppendLine("M=D");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("M=M+1");
+
+            assemblyString.AppendLine("@THIS"); //push THIS
+            assemblyString.AppendLine("D=M");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("A=M");
+            assemblyString.AppendLine("M=D");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("M=M+1");
+
+            assemblyString.AppendLine("@THAT"); //push THAT
+            assemblyString.AppendLine("D=M");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("A=M");
+            assemblyString.AppendLine("M=D");
+            assemblyString.AppendLine("@SP");
+            assemblyString.AppendLine("M=M+1");
+
+            assemblyString.AppendLine("@SP"); // ARG = SP-5-nArgs // Repositions ARG
+            assemblyString.AppendLine("D=M");
+            assemblyString.AppendLine("@5");
+            assemblyString.AppendLine("D=D-A");
+            assemblyString.AppendLine("@" + parts[2]);
+            assemblyString.AppendLine("D=D-A");
+            assemblyString.AppendLine("@ARG");
+            assemblyString.AppendLine("M=D");
+
+            assemblyString.AppendLine("@SP"); //LCL = SP // Repositions LCL
+            assemblyString.AppendLine("D=M");
+            assemblyString.AppendLine("@LCL");
+            assemblyString.AppendLine("M=D");
+
+            CreateGoTo(parts); // goto functionName // Transfers control to the called function
+
+            assemblyString.AppendLine("(" + retAddrLabel + ")"); //(retAddrLabel)
         }
 
         private void CreateLabel(string[] parts)
